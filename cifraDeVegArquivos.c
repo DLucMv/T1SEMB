@@ -220,14 +220,14 @@ void encriptArquivo() {
         int lenkey = strlen(chaveCriptografia);
         char newkey[100];
 
-        for (i = 0; i < lenText - 1; i++) {
+        for (i = 0; i < lenText ; i++) {
             j = i % lenkey;
             newkey[i] = chaveCriptografia[j];
         }
         newkey[lenText] = '\0';
 
-        for (i = 0; i < lenText - 1; i++) {
-            TextEncrypted[i] = (linha[i] + newkey[i]) % 26 + 65;
+        for (i = 0; i < lenText ; i++) {
+            TextEncrypted[i] = (linha[i] > 64) ? (linha[i] + newkey[i]) % 26 + 65 : 32;
         }
 
         TextEncrypted[lenText] = '\0';
@@ -258,14 +258,14 @@ void decriptArquivo() {
         int lenkey = strlen(chaveDescriptografia);
         char newkey[100];
 
-        for (i = 0; i < lenText - 1; i++) {
+        for (i = 0; i < lenText ; i++) {
             j = i % lenkey;
             newkey[i] = chaveDescriptografia[j];
         }
         newkey[lenText] = '\0';
 
-        for (i = 0; i < lenText - 2; i++) {
-            TextDecrypted[i] = (linha[i] - newkey[i] + 26) % 26 + 65;
+        for (i = 0; i < lenText ; i++) {
+            TextDecrypted[i] = (linha[i] > 64) ? (linha[i] - newkey[i] + 26) % 26 + 65 : 32;
         }
 
         TextDecrypted[lenText] = '\0';
