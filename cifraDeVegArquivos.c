@@ -87,16 +87,34 @@ char *strupr(char *str)
         *p = toupper(*p);
         p++;
     }
-    for(posR = 0; posR < strlen(str); posR++) {
+
+    
+    for(posR = 0; posR < strlen(str) - 1 ; posR++) {
         if(str[posR] == ' ')
             continue;
         str[posW] = str[posR];
         posW++;
     }
     str[posW] = '\0';
+    
+   /*
+   char *p1 = str;
+   char *p2 = str;
+
+    while (*p1) {
+        if (*p1 != ' ') {
+            *p2 = *p1;
+            p2++;
+        }
+        p1++;
+    }
+    *p2 = '\0';
+    */
     return str;
 }
 
+// Ler usando fseek
+/*
 char *lerArquivo(FILE *arquivo) {
     fseek(arquivo, 0, SEEK_END);
     long tamanho = ftell(arquivo);
@@ -110,6 +128,36 @@ char *lerArquivo(FILE *arquivo) {
 
     fread(conteudo, 1, tamanho, arquivo);
     conteudo[tamanho] = '\0';
+
+    // Aplica a função strupr para converter para maiúsculas
+    strupr(conteudo);
+
+    return strdup(conteudo);
+}
+*/
+
+//ler usando fgets
+char *lerArquivo(FILE *arquivo) {
+     if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo.\n");
+        exit(1);
+    }
+
+    char linha[100];  // Tamanho máximo de cada linha (ajuste conforme necessário)
+    char *conteudo = NULL;
+    size_t tamanho = 0;
+
+    while (fgets(linha, sizeof(linha), arquivo) != NULL) {
+        
+        tamanho += strlen(linha);
+        conteudo = (char *)realloc(conteudo, tamanho + 1);
+        if (conteudo == NULL) {
+            printf("Erro na alocação de memória.\n");
+            exit(1);
+        }
+
+        strcat(conteudo, linha);
+    }
 
     return conteudo;
 }
@@ -137,6 +185,7 @@ char *lerChave(FILE *arquivo) {
     return strdup(chave);
 }
 
+/*
 void escreverArquivo(FILE *arquivo, const char *conteudo) {
     char *conteudoFormatado = (char *)malloc(strlen(conteudo) + 1);
     if (conteudoFormatado == NULL) {
@@ -151,6 +200,7 @@ void escreverArquivo(FILE *arquivo, const char *conteudo) {
 
     free(conteudoFormatado);
 }
+*/
 
 void encriptArquivo() {
     abrir_arquivos();
