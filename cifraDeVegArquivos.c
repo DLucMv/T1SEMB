@@ -15,6 +15,7 @@ FILE *f; // entrada
 FILE *g; // encriptado
 FILE *h; // chave
 FILE *l; // desencriptado
+FILE *m; // entrada formatado
 
 //Detecção da Plataforma do sistema operacional
 int so(){
@@ -67,6 +68,15 @@ void abrir_arquivos() {
             exit(1);
         }
     }
+
+    m = fopen("textoFormatado.txt", "r+");
+    if (m == NULL) {
+        m = fopen("textoFormatado.txt", "w+");
+        if (m == NULL) {
+            printf("\nNão foi possível criar o arquivo de entrada.\n");
+            exit(1);
+        }
+    }
 }
 
 //Fecha todos os arquivos abertos
@@ -75,28 +85,18 @@ void fechar_arquivos() {
     fclose(g);
     fclose(h);
     fclose(l);
+    fclose(m);
 }
 
 //Funcao para conversao de string para maiuscula e eliminacao de espacos
 char *strupr(char *str)
 {
-    int posW = 0, posR = 0;
     unsigned char *p = (unsigned char *)str;
     
     while (*p) {
         *p = toupper(*p);
         p++;
     }
-
-    
-    for(posR = 0; posR < strlen(str) - 1 ; posR++) {
-        if(str[posR] == ' ')
-            continue;
-        str[posW] = str[posR];
-        posW++;
-    }
-    str[posW] = '\0';
-    
    /*
    char *p1 = str;
    char *p2 = str;
@@ -113,29 +113,6 @@ char *strupr(char *str)
     return str;
 }
 
-// Ler usando fseek
-/*
-char *lerArquivo(FILE *arquivo) {
-    fseek(arquivo, 0, SEEK_END);
-    long tamanho = ftell(arquivo);
-    rewind(arquivo);
-
-    char *conteudo = (char *)malloc(tamanho + 1);
-    if (conteudo == NULL) {
-        printf("Erro na alocação de memória.\n");
-        exit(1);
-    }
-
-    fread(conteudo, 1, tamanho, arquivo);
-    conteudo[tamanho] = '\0';
-
-    // Aplica a função strupr para converter para maiúsculas
-    strupr(conteudo);
-
-    return strdup(conteudo);
-}
-*/
-
 //ler usando fgets
 char *lerArquivo(FILE *arquivo) {
      if (arquivo == NULL) {
@@ -143,7 +120,7 @@ char *lerArquivo(FILE *arquivo) {
         exit(1);
     }
 
-    char linha[100];  // Tamanho máximo de cada linha (ajuste conforme necessário)
+    char linha[8000];  // Tamanho máximo de cada linha (ajuste conforme necessário)
     char *conteudo = NULL;
     size_t tamanho = 0;
 
@@ -159,7 +136,7 @@ char *lerArquivo(FILE *arquivo) {
         strcat(conteudo, linha);
     }
 
-    return conteudo;
+    return strdup(conteudo);
 }
 
 char *lerChave(FILE *arquivo) {
@@ -185,7 +162,6 @@ char *lerChave(FILE *arquivo) {
     return strdup(chave);
 }
 
-/*
 void escreverArquivo(FILE *arquivo, const char *conteudo) {
     char *conteudoFormatado = (char *)malloc(strlen(conteudo) + 1);
     if (conteudoFormatado == NULL) {
@@ -200,25 +176,51 @@ void escreverArquivo(FILE *arquivo, const char *conteudo) {
 
     free(conteudoFormatado);
 }
-*/
+
+void formatarTexto(){
+
+    f = fopen("textoDeEntrada.txt", "r+");
+    if (f == NULL) {
+        f = fopen("textoDeEntrada.txt", "w+");
+        if (f == NULL) {
+            printf("\nNão foi possível criar o arquivo de entrada.\n");
+            exit(1);
+        }
+    }
+
+    m = fopen("textoFormatado.txt", "r+");
+    if (m == NULL) {
+        m = fopen("textoFormatado.txt", "w+");
+        if (m == NULL) {
+            printf("\nNão foi possível criar o arquivo de entrada.\n");
+            exit(1);
+        }
+    }
+
+    escreverArquivo(m, lerArquivo(f));
+
+    fclose(f);
+    fclose(m);
+}
 
 void encriptArquivo() {
+
     abrir_arquivos();
 
     char *chaveCriptografia = lerChave(h);
 
-    if (f == NULL || g == NULL) {
+    if (m == NULL || g == NULL) {
         printf("Erro ao abrir os arquivos de entrada e saída.\n");
         exit(1);
     }
 
-    char linha[100]; // Tamanho máximo de cada linha (ajuste conforme necessário)
+    char linha[8000]; // Tamanho máximo de cada linha (ajuste conforme necessário)
 
-    while (fgets(linha, sizeof(linha), f) != NULL) {
-        char TextEncrypted[100];
+    while (fgets(linha, sizeof(linha), m) != NULL) {
+        char TextEncrypted[8000];
         int i = 0, j, lenText = strlen(linha);
         int lenkey = strlen(chaveCriptografia);
-        char newkey[100];
+        char newkey[8000];
 
         for (i = 0; i < lenText ; i++) {
             j = i % lenkey;
@@ -226,8 +228,8 @@ void encriptArquivo() {
         }
         newkey[lenText] = '\0';
 
-        for (i = 0; i < lenText ; i++) {
-            TextEncrypted[i] = (linha[i] > 64) ? (linha[i] + newkey[i]) % 26 + 65 : 32;
+        for (i = 0; i < lenText; i++) {
+            TextEncrypted[i] = (linha[i] > 64) ? (linha[i] + newkey[i]) % 26 + 65 : linha[i];
         }
 
         TextEncrypted[lenText] = '\0';
@@ -239,7 +241,6 @@ void encriptArquivo() {
     free(chaveCriptografia); // Libera a memória alocada para a chave
 }
 
-
 void decriptArquivo() {
     abrir_arquivos();
 
@@ -250,13 +251,13 @@ void decriptArquivo() {
         exit(1);
     }
 
-    char linha[100];  // Tamanho máximo de cada linha (ajuste conforme necessário)
+    char linha[8000];  // Tamanho máximo de cada linha (ajuste conforme necessário)
 
     while (fgets(linha, sizeof(linha), g) != NULL) {
-        char TextDecrypted[100];
+        char TextDecrypted[8000];
         int i = 0, j, lenText = strlen(linha);
         int lenkey = strlen(chaveDescriptografia);
-        char newkey[100];
+        char newkey[8000];
 
         for (i = 0; i < lenText ; i++) {
             j = i % lenkey;
@@ -264,8 +265,8 @@ void decriptArquivo() {
         }
         newkey[lenText] = '\0';
 
-        for (i = 0; i < lenText ; i++) {
-            TextDecrypted[i] = (linha[i] > 64) ? (linha[i] - newkey[i] + 26) % 26 + 65 : 32;
+        for (i = 0; i < lenText; i++) {
+            TextDecrypted[i] = (linha[i] > 64) ? (linha[i] - newkey[i] + 26) % 26 + 65 : linha[i];
         }
 
         TextDecrypted[lenText] = '\0';
@@ -277,9 +278,9 @@ void decriptArquivo() {
     free(chaveDescriptografia); // Libera a memória alocada para a chave
 }
 
-
 int main() {
 
+    formatarTexto();
     encriptArquivo();
     decriptArquivo();
 
