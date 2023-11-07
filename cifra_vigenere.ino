@@ -1,6 +1,3 @@
-char texto[800];
-char chave[20];
-
 char *strupr(char *str){
   unsigned char *p = (unsigned char *)str;
     
@@ -50,8 +47,9 @@ void setup() {
   Serial.begin(9600);  // Inicializa a comunicação serial a 9600 bps
   
   char key[20] = "PIZZA";
-  char text[800] = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur vestibulum accumsan nisi, vitae faucibus dolor. Vivamus tempor ac ex id luctus. Quisque erat orci, pretium sit amet magna ut, elementum tempor ipsum. Donec eu elementum ante, quis faucibus nisl. Proin ex elit, maximus vitae sollicitudin sit amet, interdum non dui. Cras non mi ultricies, dictum nunc vitae, sollicitudin mi. In et nisl in felis rhoncus vehicula. Nulla dignissim lectus in eros tristique auctor. Cras dapibus eros sit amet nibh tincidunt condimentum. Nam a molestie mi, ut gravida sapien. Morbi cursus ullamcorper leo, ac tempor nisl sagittis in. Etiam dignissim, velit ac suscipit interdum, ante dui luctus odio, varius vestibulum sapien mauris nec felis. Sed laoreet arcu at leo blandit suscipit.";
-  
+  //char text[500] = "Lorem C0m Núm3r0s E @#peci*&S";
+  char text[800] = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec euismod efficitur lorem. Vivamus felis dolor, rutrum vitae pretium ut, rutrum ut sapien. Pellentesque tincidunt porta eros a tempus. Nulla mollis quam id felis pretium, vel maximus velit accumsan. Vestibulum ultrices nec velit sit amet commodo. Suspendisse imperdiet id ante non accumsan. Mauris condimentum semper lectus, ut aliquam nibh finibus in. Integer sed leo vel augue faucibus ullamcorper ac ac orci. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Nunc auctor sollicitudin enim vitae fringilla. Sed sed enim ac sapien eleifend ornare sit amet ac urna.Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Duis tincidunt ullamcorper magna. Integer nibh.";
+
   strupr(key);
   strupr(text);
 
